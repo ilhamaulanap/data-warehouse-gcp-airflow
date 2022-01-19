@@ -111,7 +111,7 @@ with DAG('RecipeWarehouse', schedule_interval='@once', default_args=default_args
 
     LocalToGCS1 = FileToGoogleCloudStorageOperator(
         task_id='LocalToGCS1',
-        src='/mnt/c/Users/asus/Documents/airflow/data/recipe/dataset-tempe.csv',
+        src='./data/recipe/dataset-tempe.csv',
         dst='data/dataset_tempe.csv',
         bucket=BUCKET_NAME,
         google_cloud_storage_conn_id='google_cloud_default',
@@ -120,7 +120,7 @@ with DAG('RecipeWarehouse', schedule_interval='@once', default_args=default_args
 
     LocalToGCS2 = FileToGoogleCloudStorageOperator(
         task_id='LocalToGCS2',
-        src='/mnt/c/Users/asus/Documents/airflow/data/recipe/dataset-udang.csv',
+        src='./data/recipe/dataset-udang.csv',
         dst='data/dataset_udang.csv',
         bucket=BUCKET_NAME,
         google_cloud_storage_conn_id='google_cloud_default',
