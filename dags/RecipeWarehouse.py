@@ -109,7 +109,7 @@ with DAG('RecipeWarehouse', schedule_interval='@once', default_args=default_args
         dag = dag
         )
 
-    LocalToGCS1 = FileToGoogleCloudStorageOperator(
+    localToGCS1 = FileToGoogleCloudStorageOperator(
         task_id='LocalToGCS1',
         src='./data/recipe/dataset-tempe.csv',
         dst='data/dataset_tempe.csv',
@@ -118,7 +118,7 @@ with DAG('RecipeWarehouse', schedule_interval='@once', default_args=default_args
         dag=dag
         )
 
-    LocalToGCS2 = FileToGoogleCloudStorageOperator(
+    localToGCS2 = FileToGoogleCloudStorageOperator(
         task_id='LocalToGCS2',
         src='./data/recipe/dataset-udang.csv',
         dst='data/dataset_udang.csv',
@@ -127,27 +127,27 @@ with DAG('RecipeWarehouse', schedule_interval='@once', default_args=default_args
         dag=dag
         )
 
-    PostgresToGCS1 = PythonOperator(
+    postgresToGCS1 = PythonOperator(
         task_id="PostgresToGCS1",
         python_callable=Postgres_To_GCS1,
         )
 
-    PostgresToGCS2 = PythonOperator(
+    postgresToGCS2 = PythonOperator(
         task_id="PostgresToGCS2",
         python_callable=Postgres_To_GCS2,
         )
 
-    MysqlToGCS1 = PythonOperator(
+    mysqlToGCS1 = PythonOperator(
         task_id="MysqlToGCS1",
         python_callable=Mysql_To_GCS1,
         )
 
-    MysqlToGCS2 = PythonOperator(
+    mysqlToGCS2 = PythonOperator(
         task_id="MysqlToGCS2",
         python_callable=Mysql_To_GCS2,
         )
 
-    Load_staging_dataset = DummyOperator(
+    load_staging_dataset = DummyOperator(
         task_id = 'load_staging_dataset',
         dag = dag
         )    
@@ -302,7 +302,7 @@ with DAG('RecipeWarehouse', schedule_interval='@once', default_args=default_args
         sql = f'SELECT count(*) FROM `{PROJECT_ID}.{STAGING_DATASET}.dataset_udang`'
         ) 
 
-    Create_D_Table = DummyOperator(
+    create_D_Table = DummyOperator(
         task_id = 'Create_D_Table',
         dag = dag
         )
@@ -368,9 +368,9 @@ with DAG('RecipeWarehouse', schedule_interval='@once', default_args=default_args
         dag = dag
         )
 
-start_pipeline >> [LocalToGCS1, LocalToGCS2, PostgresToGCS1, PostgresToGCS2, MysqlToGCS1, MysqlToGCS2] >> Load_staging_dataset
+start_pipeline >> [localToGCS1, localToGCS2, postgresToGCS1, postgresToGCS2, mysqlToGCS1, mysqlToGCS2] >> load_staging_dataset
 
-Load_staging_dataset >> [load_dataset_ayam, load_dataset_ikan, load_dataset_tahu, load_dataset_telur, load_dataset_tempe, load_dataset_udang]
+load_staging_dataset >> [load_dataset_ayam, load_dataset_ikan, load_dataset_tahu, load_dataset_telur, load_dataset_tempe, load_dataset_udang]
 
 load_dataset_ayam >> check_dataset_ayam
 load_dataset_ikan >> check_dataset_ikan
@@ -379,9 +379,9 @@ load_dataset_telur >> check_dataset_telur
 load_dataset_tempe >> check_dataset_tempe
 load_dataset_udang >> check_dataset_udang
 
-[check_dataset_ayam, check_dataset_ikan, check_dataset_tahu, check_dataset_telur, check_dataset_tempe, check_dataset_udang] >> Create_D_Table
+[check_dataset_ayam, check_dataset_ikan, check_dataset_tahu, check_dataset_telur, check_dataset_tempe, check_dataset_udang] >> create_D_Table
 
-Create_D_Table >> [create_D_dataset_ayam, create_D_dataset_ikan, create_D_dataset_tahu, create_D_dataset_telur, create_D_dataset_tempe, create_D_dataset_udang]
+create_D_Table >> [create_D_dataset_ayam, create_D_dataset_ikan, create_D_dataset_tahu, create_D_dataset_telur, create_D_dataset_tempe, create_D_dataset_udang]
 
 [create_D_dataset_ayam, create_D_dataset_ikan, create_D_dataset_tahu, create_D_dataset_telur, create_D_dataset_tempe, create_D_dataset_udang] >> create_F_dataset_recipe
 
